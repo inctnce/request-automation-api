@@ -6,7 +6,7 @@ import db from "../db";
 
 const userRouter: Router = express.Router();
      
-userRouter.post("/post_user", async (req, res) => {
+userRouter.post("/post", async (req, res) => {
   try {
     const user: User = {
       id: uuidv1(),
@@ -55,7 +55,7 @@ userRouter.get("/get_users", async (_req, res) => {
   }
 });
 
-userRouter.delete("/del_user/:user_id", async (req, res) => {
+userRouter.delete("/del/:user_id", async (req, res) => {
   try {
     await db.user.del(req.params.user_id);
     res.sendStatus(200);
@@ -64,7 +64,7 @@ userRouter.delete("/del_user/:user_id", async (req, res) => {
   }
 });
 
-userRouter.put("/put_user", async (req, res) => {
+userRouter.put("/put", async (req, res) => {
   const data: User = {
     id: req.body.id,
     name: req.body.name,
