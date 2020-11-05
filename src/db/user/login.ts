@@ -2,7 +2,6 @@ import pool from "../pool";
 import User from "../../types/User";
 
 export default function login(email: string): Promise<User> {
-  console.log("123");
   return new Promise((resolve, reject) => {
     pool.query(
       `

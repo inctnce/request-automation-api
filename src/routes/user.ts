@@ -57,7 +57,7 @@ userRouter.get("/get_users", async (_req, res) => {
 
 userRouter.delete("/del/:user_id", async (req, res) => {
   try {
-    await db.user.del(req.params.user_id);
+    await db.user.delete(req.params.user_id);
     res.sendStatus(200);
   } catch (e) {
     res.sendStatus(500);
@@ -76,8 +76,8 @@ userRouter.put("/put", async (req, res) => {
   };
 
   try {
-    await db.user.put(data);
-    res.sendStatus(200);
+    const user = await db.user.put(data);
+    res.status(200).send(user);
   } catch (e) {
     res.status(500).send(e);
   }
