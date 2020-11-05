@@ -5,10 +5,10 @@ import User from "../types/User";
 import db from "../db";
 
 const userRouter: Router = express.Router();
-     
+
 userRouter.post("/post", async (req, res) => {
   try {
-    const user: User = {
+    const data: User = {
       id: uuidv1(),
       name: req.body.name,
       email: req.body.email,
@@ -18,7 +18,7 @@ userRouter.post("/post", async (req, res) => {
       creation_date: req.body.creation_date,
     };
 
-    await db.user.register(user);
+    await db.user.register(data);
     res.sendStatus(201);
   } catch (err) {
     console.log(err);
