@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import db from "src/db";
+import db from "../db";
 import Category from "src/types/Category";
 import { v1 as uuidv1 } from "uuid";
 
