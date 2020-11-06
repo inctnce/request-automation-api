@@ -19,7 +19,7 @@ const { BAD_REQUEST } = StatusCodes;
  ***********************************************************************************/
 const whitelist = [
   "http://localhost:5000",
-  " http://localhost:3000",
+  "http://localhost:3000",
   "https://request-automation-client.herokuapp.com",
 ];
 app.use(cors({ origin: whitelist }));
