@@ -17,7 +17,11 @@ const { BAD_REQUEST } = StatusCodes;
 /************************************************************************************
  *                              Set basic express settings
  ***********************************************************************************/
-const whitelist = ["http://localhost:5000", "https://request-automation-client.herokuapp.com"];
+const whitelist = [
+  "http://localhost:5000",
+  " http://localhost:3000",
+  "https://request-automation-client.herokuapp.com",
+];
 app.use(cors({ origin: whitelist }));
 
 app.use(express.json());
