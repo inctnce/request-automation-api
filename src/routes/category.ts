@@ -16,7 +16,7 @@ categoryRouter.post("/post", async (req, res) => {
   };
   try {
     await db.category.post(data);
-    res.sendStatus(201);
+    res.status(201).send(data);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
