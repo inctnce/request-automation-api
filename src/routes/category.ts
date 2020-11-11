@@ -5,8 +5,6 @@ import { v1 as uuidv1 } from "uuid";
 
 const categoryRouter: Router = express.Router();
 
-export default categoryRouter;
-
 categoryRouter.post("/post", async (req, res) => {
   const data: Category = {
     id: uuidv1(),
@@ -37,8 +35,6 @@ categoryRouter.put("/put", async (req, res) => {
   const data: Category = {
     id: req.body.id,
     name: req.body.name,
-    creator_id: req.body.creator_id,
-    creation_date: req.body.creation_date,
   };
   try {
     const category = await db.category.put(data);
@@ -57,3 +53,5 @@ categoryRouter.delete("/delete/:category_id", async (req, res) => {
     res.sendStatus(500);
   }
 });
+
+export default categoryRouter;
