@@ -7,7 +7,12 @@ export default function post(category: Category) {
       `
           INSERT INTO category
           VALUES
-              ("${category.id}", "${category.name}", "${category.creator_id}", "${category.creation_date}")
+              ("${category.id}", "${category.name}", "${
+        category.creator_id
+      }", "${category
+        .creation_date!.toISOString()
+        .slice(0, 19)
+        .replace("T", " ")}")
         `,
       [],
       (err) => {

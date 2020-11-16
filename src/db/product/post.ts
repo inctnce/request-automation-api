@@ -7,9 +7,18 @@ export default function post(product: Product) {
       `
           INSERT INTO product
           VALUES
-              ("${product.id}", "${product.name}", "${product.specs}", "${product.values}", 
-               "${product.price}", "${product.extra_info}", "${product.category_id}", 
-               "${product.creator_id}", "${product.creation_date}")
+              ("${product.id}", "${product.name}", "${product.specs}", "${
+        product.values
+      }", 
+               "${product.price}", "${product.extra_info}", "${
+        product.category_id
+      }", 
+               "${
+                 product.creator_id
+               }", "${product
+        .creation_date!.toISOString()
+        .slice(0, 19)
+        .replace("T", " ")}")
         `,
       [],
       (err) => {
