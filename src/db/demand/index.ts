@@ -3,11 +3,11 @@ import post from "./post";
 import put from "./put";
 import del from "./delete";
 
-const product = {
+const demand = {
   post: post,
   get: get,
   put: put,
   delete: del,
 };
 
-export default product;
+export default demand;

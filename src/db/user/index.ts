@@ -4,7 +4,6 @@ import login from "./login";
 import put from "./put";
 import register from "./register";
 
-
 const user = {
   register: register,
   login: login,

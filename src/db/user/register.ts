@@ -7,11 +7,8 @@ export default function post(user: User) {
       `
           INSERT INTO user
           VALUES
-              ("${user.id}", "${user.name}", "${user.email}", "${
-        user.password
-      }", "${user.canAddCategory}", "${
-        user.canAddProduct
-      }", "${user.creation_date!.toISOString().slice(0, 19).replace("T", " ")}")
+              ("${user.id}", "${user.name}", "${user.email}", "${user.password}", "${user.canAddCategory}", 
+              "${user.canAddProduct}", "${user.creation_date!.toISOString().slice(0, 19).replace("T", " ")}")
         `,
       [],
       (err) => {
