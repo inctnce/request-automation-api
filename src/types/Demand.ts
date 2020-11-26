@@ -10,8 +10,8 @@ type Demand = {
   financing_source: string;
   contact_person: string;
   responsible_person: string;
-  creator_id: string;
-  creation_date: Date;
+  creator_id?: string;
+  creation_date?: Date;
 };
 
 export default Demand;
