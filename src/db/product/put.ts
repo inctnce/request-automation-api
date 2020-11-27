@@ -6,7 +6,7 @@ export default function put(product: Product) {
     pool.query(
       `
         UPDATE product SET name="${product.name}", specs="${product.specs}"
-                           values="${product.values}", price="${product.price}",
+                           values="${product.settings}", price="${product.price}",
                            extra_info="${product.extra_info}", 
                            category_id="${product.category_id}",
         WHERE id="${product.id}";

@@ -2,7 +2,7 @@ type Product = {
   id: string;
   name: string;
   specs: string[];
-  values: string[];
+  settings: string[];
   price: string;
   extra_info: string;
   category_id: string;
