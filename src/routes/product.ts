@@ -22,7 +22,7 @@ productRouter.post("/post", async (req, res) => {
     res.status(201).send(data);
   } catch (err) {
     console.log(err);
-    res.sendStatus(500);
+    res.status(500).send(err);
   }
 });
 
