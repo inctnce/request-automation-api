@@ -28,9 +28,9 @@ demandRouter.post("/post", async (req, res) => {
   }
 });
 
-demandRouter.get("/get", async (_req, res) => {
+demandRouter.get("/get/:creator_id", async (req, res) => {
   try {
-    const demands: Demand[] = await db.demand.get();
+    const demands: Demand[] = await db.demand.get(req.params.creator_id);
     res.status(200).send(demands);
   } catch (error) {
     console.log(error);

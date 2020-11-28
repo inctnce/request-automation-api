@@ -26,9 +26,9 @@ productRouter.post("/post", async (req, res) => {
   }
 });
 
-productRouter.get("/get", async (_req, res) => {
+productRouter.get("/get/:category_id", async (req, res) => {
   try {
-    const products: Product[] = await db.product.get();
+    const products: Product[] = await db.product.get(req.params.category_id);
     res.status(200).send(products);
   } catch (error) {
     console.log(error);
