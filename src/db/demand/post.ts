@@ -7,7 +7,7 @@ export default function post(demand: Demand) {
       `
           INSERT INTO demand
           VALUES
-              ("${demand.id}", "${demand.name}", "${demand.products}", "${demand.total_cost}",
+              ("${demand.id}", "${demand.name}", '${demand.products}', "${demand.total_cost}",
                "${demand.deadlines}", "${demand.address}", "${demand.financing_source}",
                "${demand.contact_person}", "${demand.responsible_person}", "${demand.creator_id}",
                "${demand.creation_date!.toISOString().slice(0, 19).replace("T", " ")}")
