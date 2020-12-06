@@ -1,8 +1,13 @@
+import dotenv from "dotenv";
 import express, { Router } from "express";
 import { v1 as uuidv1 } from "uuid";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
 import User from "../types/User";
 import db from "../db";
+
+dotenv.config();
 
 const userRouter: Router = express.Router();
 
@@ -36,7 +41,17 @@ userRouter.post("/login", async (req, res) => {
     if (user) {
       const isValid: boolean = await bcrypt.compare(password, user.password);
 
-      if (isValid) res.status(200).send(user);
+      if (isValid) {
+        const accessToken = generateToken(user);
+        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET!);
+
+        const user_data = {
+          id: user.id,
+          token: accessToken,
+          refreshToken: refreshToken,
+        };
+        res.status(200).send(user_data);
+      }
     } else {
       res.status(400).send("Wrong email or password");
     }
@@ -82,5 +97,21 @@ userRouter.put("/put", async (req, res) => {
     res.status(500).send(e);
   }
 });
+
+function authenticateToken(req: any, res: any, next: any) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!, (err: any, user: any) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
+
+function generateToken(user: any) {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "10m" });
+}
 
 export default userRouter;
