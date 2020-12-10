@@ -2,10 +2,11 @@ import express, { Router } from "express";
 import db from "../db";
 import Product from "src/types/Product";
 import { v1 as uuidv1 } from "uuid";
+import tokenHandler from "./helpers/tokens";
 
 const productRouter: Router = express.Router();
 
-productRouter.post("/post", async (req, res) => {
+productRouter.post("/post", tokenHandler.authenticateToken, async (req, res) => {
   const data: Product = {
     id: uuidv1(),
     name: req.body.name,
@@ -26,7 +27,7 @@ productRouter.post("/post", async (req, res) => {
   }
 });
 
-productRouter.get("/get/:key/:id", async (req, res) => {
+productRouter.get("/get/:key/:id", tokenHandler.authenticateToken, async (req, res) => {
   try {
     const products: Product[] = await db.product.get(req.params.id, req.params.key);
     res.status(200).send(products);
@@ -36,7 +37,7 @@ productRouter.get("/get/:key/:id", async (req, res) => {
   }
 });
 
-productRouter.put("/put", async (req, res) => {
+productRouter.put("/put", tokenHandler.authenticateToken, async (req, res) => {
   const data: Product = {
     id: req.body.id,
     name: req.body.name,
@@ -55,7 +56,7 @@ productRouter.put("/put", async (req, res) => {
   }
 });
 
-productRouter.delete("/delete/:product_id", async (req, res) => {
+productRouter.delete("/delete/:product_id", tokenHandler.authenticateToken, async (req, res) => {
   try {
     await db.product.delete(req.params.product_id);
     res.sendStatus(200);

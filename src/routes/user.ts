@@ -1,17 +1,67 @@
-import dotenv from "dotenv";
-import express, { Router } from "express";
-import { v1 as uuidv1 } from "uuid";
+import User from "src/types/User";
+
+import db from "src/db";
+import tokenHandler from "./helpers/tokens";
+
+import express from "express";
 import bcrypt from "bcrypt";
+import { v1 as uuidv1 } from "uuid";
 import jwt from "jsonwebtoken";
 
-import User from "../types/User";
-import db from "../db";
+const userRouter = express.Router();
 
-dotenv.config();
+userRouter.post("/token", async (req: express.Request, res: express.Response) => {
+  const data: any = await db.token.get(req.body.token);
+  const refreshToken: string = data[0].token;
 
-const userRouter: Router = express.Router();
+  if (refreshToken) {
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!, (err: any, username: any) => {
+      if (err) return res.sendStatus(403);
+      const accessToken = tokenHandler.generateToken(username);
+      console.log(accessToken);
+      res.status(200).send({ accessToken: accessToken });
+    });
+  }
+});
 
-userRouter.post("/post", async (req, res) => {
+userRouter.delete("/logout", (req: express.Request, res: express.Response) => {
+  db.token.delete(req.body.token);
+  res.sendStatus(204);
+});
+
+userRouter.post("/login", async (req: express.Request, res: express.Response) => {
+  try {
+    const email: string = req.body.email;
+    const password: string = req.body.password;
+
+    const user: User = await db.user.login(email);
+
+    if (user) {
+      const isValid: boolean = await bcrypt.compare(password, user.password!);
+
+      if (isValid) {
+        console.log(user.name);
+        const accessToken = tokenHandler.generateToken({ name: user.name });
+        const refreshToken = jwt.sign(JSON.stringify(user), process.env.REFRESH_TOKEN_SECRET!);
+
+        await db.token.post(refreshToken);
+
+        user.accessToken = accessToken;
+        user.refreshToken = refreshToken;
+        user.password = "";
+
+        res.status(200).send(user);
+      }
+    } else {
+      res.status(400).send("Wrong email or password");
+    }
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+});
+
+userRouter.post("/post", async (req: express.Request, res: express.Response) => {
   try {
     const data: User = {
       id: uuidv1(),
@@ -31,37 +81,7 @@ userRouter.post("/post", async (req, res) => {
   }
 });
 
-userRouter.post("/login", async (req, res) => {
-  try {
-    const email: string = req.body.email;
-    const password: string = req.body.password;
-
-    const user: User = await db.user.login(email);
-
-    if (user) {
-      const isValid: boolean = await bcrypt.compare(password, user.password);
-
-      if (isValid) {
-        const accessToken = generateToken(user);
-        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET!);
-
-        const user_data = {
-          id: user.id,
-          token: accessToken,
-          refreshToken: refreshToken,
-        };
-        res.status(200).send(user_data);
-      }
-    } else {
-      res.status(400).send("Wrong email or password");
-    }
-  } catch (err) {
-    console.log(err);
-    res.sendStatus(500);
-  }
-});
-
-userRouter.get("/get_users", async (_req, res) => {
+userRouter.get("/get_users", tokenHandler.authenticateToken, async (_req: express.Request, res: express.Response) => {
   try {
     const result = await db.user.get();
     res.status(200).send(result);
@@ -70,16 +90,20 @@ userRouter.get("/get_users", async (_req, res) => {
   }
 });
 
-userRouter.delete("/del/:user_id", async (req, res) => {
-  try {
-    await db.user.delete(req.params.user_id);
-    res.sendStatus(200);
-  } catch (e) {
-    res.sendStatus(500);
+userRouter.delete(
+  "/del/:user_id",
+  tokenHandler.authenticateToken,
+  async (req: express.Request, res: express.Response) => {
+    try {
+      await db.user.delete(req.params.user_id);
+      res.sendStatus(200);
+    } catch (e) {
+      res.sendStatus(500);
+    }
   }
-});
+);
 
-userRouter.put("/put", async (req, res) => {
+userRouter.put("/put", async (req: express.Request, res: express.Response) => {
   const data: User = {
     id: req.body.id,
     name: req.body.name,
@@ -97,21 +121,5 @@ userRouter.put("/put", async (req, res) => {
     res.status(500).send(e);
   }
 });
-
-function authenticateToken(req: any, res: any, next: any) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!, (err: any, user: any) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-}
-
-function generateToken(user: any) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "10m" });
-}
 
 export default userRouter;
