@@ -1,12 +1,13 @@
 import User from "src/types/User";
 
-import db from "src/db";
+import db from "../db";
 import tokenHandler from "./helpers/tokens";
 
 import express from "express";
 import bcrypt from "bcrypt";
 import { v1 as uuidv1 } from "uuid";
 import jwt from "jsonwebtoken";
+
 
 const userRouter = express.Router();
 
